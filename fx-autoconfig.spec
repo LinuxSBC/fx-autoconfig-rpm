@@ -4,29 +4,32 @@ Release: 1
 Summary: Firefox userChrome.js manager
 
 License: MPL-2.0
-Distribution: user
-Group: user
-Packager: user
+URL: https://github.com/MrOtherGuy/fx-autoconfig
+Source0: https://github.com/MrOtherGuy/fx-autoconfig/archive/master.tar.gz
+Requires: firefox
+
+%define debug_package %{nil}
 
 %description
 Firefox userChrome.js manager
 
-%files
-/usr/lib64/firefox/defaults/pref/config-prefs.js
-/usr/lib64/firefox/config.js
+%prep
+# -n tells RPM the actual name of the folder inside the tarball
+%autosetup -n fx-autoconfig-master
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/usr/lib64/firefox/
-cp -r ./fx-autoconfig/program/defaults $RPM_BUILD_ROOT/usr/lib64/firefox/
-cp ./fx-autoconfig/program/config.js $RPM_BUILD_ROOT/usr/lib64/firefox/
+rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_libdir}/firefox
+
+cp -p program/config.js %{buildroot}%{_libdir}/firefox/
+cp -pr program/defaults %{buildroot}%{_libdir}/firefox/defaults
+
+%files
+%{_libdir}/firefox/config.js
+%{_libdir}/firefox/defaults/
 
 %post
-if [ -d /usr/lib64/firefox/defaults/pref ]; then
-    echo "userChrome.js manager installed successfully."
-else
-    echo "Failed to install userChrome.js manager."
-fi
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+echo "Firefox userChrome.js manager (fx-autoconfig) installed."
+%changelog
+* Sun Apr 26 2026 Anna Simmons <anna@simmons.ovh> - 1.0.0-1
+- Initial package build
