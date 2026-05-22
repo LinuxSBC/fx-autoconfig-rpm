@@ -1,35 +1,40 @@
+%global commit d469a80f12e286c0e937d8b93c01dfc2d55dca8f
+%global commit_date 20260504
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
 Name: fx-autoconfig
-Version: 1.0.0
-Release: 1
+Version: 0~%{commit_date}git.%{shortcommit}
+Release: 1%{?dist}
 Summary: Firefox userChrome.js manager
+Packager: Anna Simmons <anna@simmons.ovh>
 
 License: MPL-2.0
 URL: https://github.com/MrOtherGuy/fx-autoconfig
-Source0: https://github.com/MrOtherGuy/fx-autoconfig/archive/master.tar.gz
+Source0: https://github.com/MrOtherGuy/fx-autoconfig/archive/%commit.tar.gz
 Requires: firefox
-
-%define debug_package %{nil}
+BuildArch: noarch
 
 %description
-Firefox userChrome.js manager
+%{summary}.
 
 %prep
 # -n tells RPM the actual name of the folder inside the tarball
-%autosetup -n fx-autoconfig-master
+%autosetup -n fx-autoconfig-%commit
+
+%build
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_libdir}/firefox
 
-cp -p program/config.js %{buildroot}%{_libdir}/firefox/
+install -Dm644 program/config.js %{buildroot}%{_libdir}/firefox/
 cp -pr program/defaults %{buildroot}%{_libdir}/firefox/defaults
 
 %files
+%license LICENSE
+%doc readme.md
 %{_libdir}/firefox/config.js
 %{_libdir}/firefox/defaults/
 
-%post
-echo "Firefox userChrome.js manager (fx-autoconfig) installed."
 %changelog
-* Sun Apr 26 2026 Anna Simmons <anna@simmons.ovh> - 1.0.0-1
+* Thu May 21 2026 Anna Simmons <anna@simmons.ovh>
 - Initial package build
